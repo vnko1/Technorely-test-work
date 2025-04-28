@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-body: "Roboto", sans-serif;
+
+  --color-accent: white;
+  --color-accent-dark: orange;
+
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@layer base {
+  body {
+    @apply h-screen overflow-y-auto font-body text-base font-normal text-slate-600 dark:text-amber-100 bg-amber-100 dark:bg-neutral-600;
+  }
+
+  h1 {
+    @apply text-4xl font-bold;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+
+  h3 {
+    @apply text-xl font-semibold;
+  }
+
+  img {
+    @apply block w-full h-auto;
+  }
+
+  a {
+    @apply outline-none;
+  }
+
+  button {
+    @apply p-0 cursor-pointer outline-none;
+  }
+}
+
+@layer components {
+  .wrapper {
+    @apply container mx-auto px-4 py-8;
+  }
+
+  .page {
+    @apply relative flex flex-col items-center gap-10 pt-40;
+  }
+
+  .section {
+    @apply flex flex-col gap-8 w-full;
+  }
+
+  .paper {
+    @apply flex flex-col gap-5 w-full mx-auto p-10 rounded-xl bg-slate-200 dark:bg-gray-600;
+  }
+
+  .card {
+    @apply flex flex-col gap-3 w-full p-3 bg-blue-100 dark:bg-sky-950;
+  }
+
+  .dashboardCard {
+    @apply p-3 bg-blue-100 dark:bg-sky-950 rounded-md;
+  }
+
+  .form {
+    @apply flex flex-col gap-5 w-full mx-auto p-10 rounded-xl;
+  }
+
+  .button {
+    @apply inline-flex justify-center items-center py-2 px-4 rounded-4xl  bg-indigo-400 hover:bg-orange-600 focus:bg-orange-600  hover:text-accent focus:text-accent dark:hover:text-accent-dark dark:focus:text-accent-dark  transition-all duration-300 ease-fluid cursor-pointer disabled:bg-gray-300 disabled:text-gray-600 dark:disabled:text-gray-600 disabled:cursor-default;
+  }
+
+  .link {
+    @apply inline-flex justify-center items-center  hover:text-accent focus:text-accent dark:hover:text-accent-dark dark:focus:text-accent-dark transition-all duration-300 ease-fluid;
+  }
+
+  .image {
+    @apply rounded-xl w-1/2 h-1/2 overflow-hidden;
+  }
+
+  .no-scroll {
+    @apply overflow-hidden;
+  }
+}
+
+.grid-container {
+  @media screen and (min-width: 1024px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "stat stat"
+      "users companies";
+  }
+}
+
+.grid-stat {
+  grid-area: stat;
+}
+
+.grid-users {
+  grid-area: users;
+}
+
+.grid-companies {
+  grid-area: companies;
+}

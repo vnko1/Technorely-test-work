@@ -1,0 +1,12 @@
+export { default as Dashboard } from "./Dashboard/Dashboard";
+export { default as Login } from "./Login/Login";
+export { default as Signup } from "./Signup/Signup";
+export { default as NotFound } from "./404/404";
+export { default as SetPassword } from "./SetPassword/SetPassword";
+export { default as ResetPassword } from "./ResetPassword/ResetPassword";
+export { default as Companies } from "./Companies/Companies";
+export { default as Profile } from "./Profile/Profile";
+export { default as PasswordChange } from "./PasswordChange/PasswordChange";
+export { default as ActionLogs } from "./ActionLogs/ActionLogs";
+export { default as Company } from "./Company/Company";
+export { default as User } from "./User/User";
