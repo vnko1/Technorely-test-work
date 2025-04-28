@@ -27,7 +27,7 @@ import { JwtAuthGuard } from "./modules/auth/guards/jwt.guard";
           ? { ca: configService.get("db.ssl") }
           : false,
         entities: [__dirname + "/modules/**/*.entity{.ts,.js}"],
-        synchronize: false,
+        synchronize: true,
       }),
     }),
     ...appModules,
