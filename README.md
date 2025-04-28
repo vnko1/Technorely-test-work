@@ -78,16 +78,16 @@ Once the application is running, you can access the Swagger documentation at:
 
 ## Development
 
-1.Build the Docker images:
+### Start app in dev mode:
 
 ```docker
-  docker-compose up
+  docker compose -f 'docker-compose.dev.yml' up -d --build
 ```
 
-2.Start the containers:
+## Production
+
+### Start app in prod mode:
 
 ```docker
-  docker-compose up -d
+  docker compose -f 'docker-compose.prod.yml' up -d --build
 ```
-
-3. Ensure the environment variables are correctly set for production in the .env files.
