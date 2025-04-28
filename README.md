@@ -43,16 +43,19 @@ This repository contains the **Company Dashboard App**, a platform designed to m
 2. Set up environment variables
    - Copy .env.example files in both backend and frontend directories and rename them to .env.
    - Update the variables as needed.
-3. ```bash
-   cd backend
-   npm install
-   cd ../frontend
-   npm install
-   ```
-4. Start the application in development mode:
+
+### Start app in dev mode:
 
 ```docker
-  docker-compose up
+  docker compose -f 'docker-compose.dev.yml' up -d --build
+```
+
+## Production
+
+### Start app in prod mode:
+
+```docker
+  docker compose -f 'docker-compose.prod.yml' up -d --build
 ```
 
 ## API Documentation
@@ -75,19 +78,3 @@ Once the application is running, you can access the Swagger documentation at:
 - Explore authentication and authorization requirements for each endpoint.
 
 ---
-
-## Development
-
-### Start app in dev mode:
-
-```docker
-  docker compose -f 'docker-compose.dev.yml' up -d --build
-```
-
-## Production
-
-### Start app in prod mode:
-
-```docker
-  docker compose -f 'docker-compose.prod.yml' up -d --build
-```
