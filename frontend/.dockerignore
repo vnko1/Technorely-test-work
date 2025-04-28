@@ -3,4 +3,3 @@ dist
 *.log
 *.md
 .git
-package-lock.json
