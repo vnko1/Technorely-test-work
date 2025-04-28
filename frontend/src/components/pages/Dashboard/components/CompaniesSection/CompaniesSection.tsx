@@ -23,7 +23,7 @@ const CompaniesSection: React.FC<Props> = ({ classnames }) => {
     isNaN(parsedLimit) ? 10 : parsedLimit
   );
 
-  useHandleApi([error]);
+  useHandleApi(error);
 
   return (
     <section

@@ -4,26 +4,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { CustomButton, Field } from "@/components";
-import { useHandleApi } from "@/hooks";
 import { publicApi } from "@/api";
 import { CredentialType, Endpoints } from "@/types";
-import { setToken } from "@/utils";
+import { setToken, showError } from "@/utils";
 import { LoginInterface, LoginSchema } from "./schema";
 
 const initialState = { email: "", password: "" };
 
 const LoginForm: React.FC = () => {
   const queryClient = useQueryClient();
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: LoginInterface) =>
       publicApi.post<CredentialType>(Endpoints.LOGIN, data),
     onSuccess: (data) => {
       setToken(data.data.access_token);
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },
+    onError: showError,
   });
-
-  useHandleApi([error]);
 
   const methods = useForm<LoginInterface>({
     defaultValues: initialState,

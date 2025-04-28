@@ -2,11 +2,10 @@ import React, { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-import { getUrlFromObject } from "@/utils";
+import { getUrlFromObject, showError } from "@/utils";
 import { CustomButton, CustomIconButton, ImageField } from "@/components";
 import { privateApi } from "@/api";
 import { IUser } from "@/types";
-import { useHandleApi } from "@/hooks";
 
 interface Props {
   user?: IUser;
@@ -21,19 +20,20 @@ const Avatar: React.FC<Props> = ({ user, path, queryKeys = [] }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", ...queryKeys] });
     },
+    onError: showError,
   });
+
   const queryDelete = useMutation({
     mutationFn: () => privateApi.delete(path),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["user", ...queryKeys] });
       setFiles([]);
     },
+    onError: showError,
   });
 
   const [files, setFiles] = useState<Array<File>>([]);
   const ref = useRef<HTMLInputElement | null>(null);
-
-  useHandleApi([queryUpload.error, queryDelete.error]);
 
   const handleImageClick = () => {
     ref.current?.click();

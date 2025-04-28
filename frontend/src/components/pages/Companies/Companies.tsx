@@ -16,7 +16,7 @@ const Companies: React.FC = () => {
     page
   );
 
-  useHandleApi([error]);
+  useHandleApi(error);
 
   return (
     <main className="page">

@@ -21,7 +21,7 @@ const StatisticSection: React.FC<Props> = ({ classnames }) => {
     staleTime,
   });
 
-  useHandleApi([error]);
+  useHandleApi(error);
 
   if (isLoading) return <Loader />;
   if (!data) return <NoContent />;

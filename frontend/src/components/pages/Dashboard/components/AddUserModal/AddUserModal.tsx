@@ -5,11 +5,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import { Endpoints, Role } from "@/types";
-import { useHandleApi } from "@/hooks";
 import { CustomButton, CustomSelect, Field, Modal } from "@/components";
 import { privateApi } from "@/api";
 import { AppContext } from "@/context";
-import { rolesSelector } from "@/utils";
+import { rolesSelector, showError } from "@/utils";
 import { AddUserInterface, AddUserSchema } from "./schema";
 
 interface Props {
@@ -29,7 +28,7 @@ const AddUserModal: React.FC<Props> = () => {
   const [active, setActive] = useState(false);
 
   const queryClient = useQueryClient();
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: AddUserInterface) =>
       privateApi.post(Endpoints.ADMIN, data),
     onSuccess: async () => {
@@ -37,8 +36,8 @@ const AddUserModal: React.FC<Props> = () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       onClose();
     },
+    onError: showError,
   });
-  useHandleApi([error]);
 
   const methods = useForm<AddUserInterface>({
     defaultValues: initialValues,

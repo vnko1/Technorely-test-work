@@ -58,7 +58,7 @@ const UsersSection: React.FC<Props> = ({ classnames }) => {
     staleTime,
   });
 
-  useHandleApi([error]);
+  useHandleApi(error);
 
   const handlePageChange = (
     _: React.ChangeEvent<unknown>,

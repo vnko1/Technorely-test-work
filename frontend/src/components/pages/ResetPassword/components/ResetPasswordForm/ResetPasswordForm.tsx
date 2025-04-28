@@ -7,23 +7,22 @@ import { useNavigate } from "react-router";
 import { Endpoints, ResetPasswordType, Route } from "@/types";
 import { CustomButton, Field } from "@/components";
 import { publicApi } from "@/api";
-import { useHandleApi } from "@/hooks";
 
 import { ResetPasswordSchema, ResetPasswordInterface } from "./schema";
+import { showError } from "@/utils";
 
 const initialState = { email: "" };
 
 const ResetPasswordForm: React.FC = () => {
   const navigate = useNavigate();
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: ResetPasswordInterface) =>
       publicApi.post<ResetPasswordType>(Endpoints.RESET, data),
     onSuccess: (data) => {
       navigate(`${Route.SET}/${data.data.token}`);
     },
+    onError: showError,
   });
-
-  useHandleApi([error]);
 
   const methods = useForm<ResetPasswordInterface>({
     defaultValues: initialState,

@@ -5,23 +5,22 @@ import { useMutation } from "@tanstack/react-query";
 
 import { privateApi } from "@/api";
 import { Endpoints } from "@/types";
-import { useHandleApi } from "@/hooks";
 import { CustomButton, Field } from "@/components";
+import { showError } from "@/utils";
 
 import { ChangePasswordInterface, ChangePasswordSchema } from "./schema";
 
 const initialState = { password: "", newPassword: "", confirm: "" };
 
 const PasswordForm: React.FC = () => {
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: Record<string, string>) =>
       privateApi.patch(Endpoints.PASSWORD, data),
     onSuccess: () => {
       methods.reset();
     },
+    onError: showError,
   });
-
-  useHandleApi([error]);
 
   const methods = useForm<ChangePasswordInterface>({
     defaultValues: initialState,

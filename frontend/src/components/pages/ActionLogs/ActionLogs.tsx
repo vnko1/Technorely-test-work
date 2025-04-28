@@ -34,7 +34,7 @@ const ActionLogs: React.FC = () => {
     },
   });
 
-  useHandleApi([error]);
+  useHandleApi(error);
   return (
     <main className="page">
       <section className="section">

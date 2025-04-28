@@ -6,6 +6,8 @@ import {
   publicRoutes,
   restrictedRoutes,
 } from "../constants";
+import { isAxiosError } from "axios";
+import toast from "react-hot-toast";
 
 export function getToken() {
   return localStorage.getItem(accessToken);
@@ -84,4 +86,10 @@ export function createQueryParams(data: Array<[string, unknown]>) {
 
 export function getTextFromMeta(meta: Record<string, string>) {
   return Object.values(meta).join("; ");
+}
+
+export function showError(error: Error | null) {
+  if (isAxiosError(error)) {
+    toast.error(error.response?.data.message);
+  }
 }

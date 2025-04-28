@@ -7,22 +7,21 @@ import { useNavigate } from "react-router";
 import { CustomButton, Field } from "@/components";
 import { publicApi } from "@/api";
 import { Endpoints, Route } from "@/types";
-import { useHandleApi } from "@/hooks";
+import { showError } from "@/utils";
 import { SignupInterface, SignupSchema } from "./schema";
 
 const initialState = { email: "", password: "", confirm: "" };
 
 const SignupForm: React.FC = () => {
   const navigate = useNavigate();
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: SignupInterface) =>
       publicApi.post(Endpoints.REGISTER, data),
     onSuccess: () => {
       navigate(Route.LOGIN);
     },
+    onError: showError,
   });
-
-  useHandleApi([error]);
 
   const methods = useForm<SignupInterface>({
     defaultValues: initialState,

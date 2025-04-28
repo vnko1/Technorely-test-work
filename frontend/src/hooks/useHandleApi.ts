@@ -1,15 +1,11 @@
-import { isAxiosError } from "axios";
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 
-type ConfigType = Array<Error | null>;
+import { showError } from "@/utils";
 
-export const useHandleApi = (errors: ConfigType) => {
+type ConfigType = Error | null;
+
+export const useHandleApi = (error: ConfigType) => {
   useEffect(() => {
-    errors.forEach((error) => {
-      if (isAxiosError(error)) {
-        toast.error(error.response?.data.message);
-      }
-    });
-  }, [errors]);
+    showError(error);
+  }, [error]);
 };

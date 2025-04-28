@@ -19,7 +19,7 @@ const UserDashboard: React.FC = () => {
     isNaN(parsedLimit) ? 10 : parsedLimit
   );
 
-  useHandleApi([error]);
+  useHandleApi(error);
 
   return (
     <main className="page">

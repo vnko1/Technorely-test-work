@@ -3,9 +3,10 @@ import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { privateApi } from "@/api";
-import { useHandleApi } from "@/hooks";
+
 import { Endpoints, Route } from "@/types";
 import { CustomButton } from "@/components";
+import { showError } from "@/utils";
 
 interface Props {
   id?: string;
@@ -15,7 +16,7 @@ const CompanyDelete: React.FC<Props> = ({ id }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { mutateAsync, error, isPending } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: () => {
       return privateApi.delete(`${Endpoints.COMPANY}/${id}`);
     },
@@ -24,9 +25,8 @@ const CompanyDelete: React.FC<Props> = ({ id }) => {
         queryKey: ["companies"],
       });
     },
+    onError: showError,
   });
-
-  useHandleApi([error]);
 
   const handleClick = async () => {
     await mutateAsync();

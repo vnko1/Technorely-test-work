@@ -6,8 +6,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { Endpoints, ICompany } from "@/types";
 import { CustomButton, Field, ImageField, Modal } from "@/components";
 import { privateApi } from "@/api";
-import { useHandleApi } from "@/hooks";
-import { getFormData, getUrlFromObject } from "@/utils";
+import { getFormData, getUrlFromObject, showError } from "@/utils";
 import { CreateCompanyInterface, CreateCompanySchema } from "./schema";
 
 const initialValues = {
@@ -23,12 +22,12 @@ const AddCompany: React.FC = () => {
   const ref = useRef<HTMLInputElement | null>(null);
 
   const queryClient = useQueryClient();
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: CreateCompanyInterface) => {
       const formData = getFormData(data, files, "logo");
       return privateApi.post<ICompany>(Endpoints.COMPANIES, formData);
     },
-
+    onError: showError,
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["statistic"] });
       await queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -36,8 +35,6 @@ const AddCompany: React.FC = () => {
       onClose();
     },
   });
-
-  useHandleApi([error]);
 
   const methods = useForm<CreateCompanyInterface>({
     defaultValues: initialValues,

@@ -20,7 +20,7 @@ const Company: React.FC = () => {
     staleTime: staleTime,
   });
 
-  useHandleApi([error]);
+  useHandleApi(error);
 
   if (isLoading) return <Loader withBackdrop />;
 

@@ -7,9 +7,9 @@ import { useMutation } from "@tanstack/react-query";
 import { CustomButton, Field } from "@/components";
 import { publicApi } from "@/api";
 import { Endpoints, Route } from "@/types";
-import { useHandleApi } from "@/hooks";
 
 import { SetPasswordSchema, SetPasswordInterface } from "./schema";
+import { showError } from "@/utils";
 
 interface Props {
   passwordResetToken: string;
@@ -20,15 +20,14 @@ const initialState = { password: "", confirm: "" };
 const SetPasswordForm: React.FC<Props> = ({ passwordResetToken }) => {
   const navigate = useNavigate();
 
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: Record<string, string>) =>
       publicApi.post(Endpoints.SET, data),
     onSuccess: () => {
       navigate(Route.LOGIN);
     },
+    onError: showError,
   });
-
-  useHandleApi([error]);
 
   const methods = useForm<SetPasswordInterface>({
     defaultValues: initialState,

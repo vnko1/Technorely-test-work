@@ -19,7 +19,7 @@ const User: React.FC = () => {
     refetchOnWindowFocus: false,
     staleTime,
   });
-  useHandleApi([error]);
+  useHandleApi(error);
 
   const user = data?.data;
 

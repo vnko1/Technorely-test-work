@@ -6,14 +6,13 @@ import { FaRegTrashAlt } from "react-icons/fa";
 
 import { Endpoints, ICompany } from "@/types";
 import { privateApi } from "@/api";
-import { getFormData, getUrlFromObject } from "@/utils";
+import { getFormData, getUrlFromObject, showError } from "@/utils";
 import {
   CustomButton,
   CustomIconButton,
   Field,
   ImageField,
 } from "@/components";
-import { useHandleApi } from "@/hooks";
 import { UpdateCompanyInterface, UpdateCompanySchema } from "./schema";
 
 interface Props extends ICompany {
@@ -28,7 +27,7 @@ const CompanyDetail: React.FC<Props> = ({
   id,
 }) => {
   const queryClient = useQueryClient();
-  const { mutate, error, reset, isPending } = useMutation({
+  const { mutate, reset, isPending } = useMutation({
     mutationFn: (data: UpdateCompanyInterface) => {
       const formData = getFormData(data, files, "logo");
       return privateApi.patch<ICompany>(
@@ -36,6 +35,7 @@ const CompanyDetail: React.FC<Props> = ({
         formData
       );
     },
+    onError: showError,
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company", `${id}`] });
@@ -50,12 +50,11 @@ const CompanyDetail: React.FC<Props> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company", `${id}`] });
     },
+    onError: showError,
   });
 
   const [files, setFiles] = useState<Array<File>>([]);
   const ref = useRef<HTMLInputElement | null>(null);
-
-  useHandleApi([error, logoQuery.error]);
 
   const methods = useForm<UpdateCompanyInterface>({
     defaultValues: { coords: coords || "", capital, name, service },
