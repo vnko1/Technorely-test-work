@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UsePipes,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
@@ -45,6 +46,8 @@ import {
   CreateCompanyApiDto,
 } from "./dto";
 import { CompanyEntity } from "./company.entity";
+import { CompaniesGuard } from "./guards/companies.guard";
+import { Company } from "./decorators/company.decorator";
 
 @ApiTags("companies")
 @ApiBearerAuth()
@@ -73,12 +76,12 @@ export class CompaniesController {
   )
   @UsePipes(new CustomValidationPipe<CreateCompanyDto>(CreateCompanySchema))
   createCompany(
-    @User("id") id: number,
+    @User() user: IUser,
     @Body() createCompanyDto: CreateCompanyDto,
     @UploadedFile(uploadValidation())
     logo?: Express.Multer.File
   ) {
-    return this.companiesService.createCompany(createCompanyDto, id, logo);
+    return this.companiesService.createCompany(createCompanyDto, user, logo);
   }
 
   @Patch(":id")
@@ -114,15 +117,17 @@ export class CompaniesController {
     }),
     ClearDataInterceptor
   )
+  @UseGuards(CompaniesGuard)
   @UsePipes(new CustomValidationPipe<UpdateCompanyDto>(UpdateCompanySchema))
   updateCompany(
-    @Param("id", ParseIntPipe) id: number,
     @User() user: IUser,
     @Body() companyDto: UpdateCompanyDto,
     @UploadedFile(uploadValidation())
-    logo?: Express.Multer.File
+    logo: Express.Multer.File | undefined,
+    @Company()
+    company: CompanyEntity
   ) {
-    return this.companiesService.updateCompany(id, user, companyDto, logo);
+    return this.companiesService.updateCompany(company, user, companyDto, logo);
   }
 
   @Put("company/:id/logo")
@@ -156,13 +161,15 @@ export class CompaniesController {
     }),
     ClearDataInterceptor
   )
+  @UseGuards(CompaniesGuard)
   addOrChangeLogo(
-    @Param("id", ParseIntPipe) id: number,
     @User() user: IUser,
     @UploadedFile(uploadValidation(true))
-    logo: Express.Multer.File
+    logo: Express.Multer.File,
+    @Company()
+    company: CompanyEntity
   ) {
-    return this.companiesService.addOrChangeCompanyLogo(id, user, logo);
+    return this.companiesService.addOrChangeCompanyLogo(company, user, logo);
   }
 
   @Delete("company/:id/logo")
@@ -177,9 +184,15 @@ export class CompaniesController {
     description: "Logo already is deleted.",
     type: CompanyEntity,
   })
+  @UseGuards(CompaniesGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteLogo(@Param("id", ParseIntPipe) id: number, @User() user: IUser) {
-    return this.companiesService.deleteCompanyLogo(id, user);
+  deleteLogo(
+    @Param("id", ParseIntPipe) id: number,
+    @User() user: IUser,
+    @Company()
+    company: CompanyEntity
+  ) {
+    return this.companiesService.deleteCompanyLogo(company, user);
   }
 
   @Delete("company/:id")
@@ -194,9 +207,14 @@ export class CompaniesController {
     description: "Company already is deleted.",
     type: CompanyEntity,
   })
+  @UseGuards(CompaniesGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteCompany(@Param("id", ParseIntPipe) id: number, @User() user: IUser) {
-    return this.companiesService.deleteCompany(id, user);
+  deleteCompany(
+    @User() user: IUser,
+    @Company()
+    company: CompanyEntity
+  ) {
+    return this.companiesService.deleteCompany(company, user);
   }
 
   @Get("company/:id")
@@ -211,8 +229,12 @@ export class CompaniesController {
     description: "Company not found.",
     type: CompanyEntity,
   })
-  getCompany(@Param("id", ParseIntPipe) id: number, @User() user: IUser) {
-    return this.companiesService.getCompany(id, user);
+  @UseGuards(CompaniesGuard)
+  getCompany(
+    @Company()
+    company: CompanyEntity
+  ) {
+    return this.companiesService.getCompany(company);
   }
 
   @Get()
