@@ -1,18 +1,6 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  Between,
-  DataSource,
-  QueryRunner,
-  Repository,
-  MoreThanOrEqual,
-} from "typeorm";
+import { Between, DataSource, Repository, MoreThanOrEqual } from "typeorm";
 import { instanceToPlain } from "class-transformer";
 import { UploadApiOptions } from "cloudinary";
 import { startOfDay, endOfDay } from "date-fns";
@@ -23,7 +11,6 @@ import { errorMessages } from "src/utils";
 
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { ActionLogsService } from "../actionLogs/actionLogs.service";
-import { UserEntity } from "../users/user.entity";
 
 import { CompanyEntity } from "./company.entity";
 import { CreateCompanyDto, CompaniesQueryDto, UpdateCompanyDto } from "./dto";
@@ -58,22 +45,9 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     return { url, pId: response.public_id };
   }
 
-  private async findCompany(id: number, user: IUser, queryRunner: QueryRunner) {
-    const company = await queryRunner.manager.findOne(CompanyEntity, {
-      where: { id },
-      relations: { user: true },
-    });
-
-    if (!company) throw new NotFoundException();
-    if (user.role === Role.User && company.user.id !== user.id)
-      throw new ForbiddenException();
-
-    return company;
-  }
-
   async createCompany(
     companyDto: CreateCompanyDto,
-    id: number,
+    user: IUser,
     logo?: Express.Multer.File
   ) {
     let publicId: string | null = null;
@@ -82,16 +56,11 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     await queryRunner.startTransaction();
 
     try {
-      const user = await queryRunner.manager.findOne(UserEntity, {
-        where: { id },
-      });
-      if (!user) throw new UnauthorizedException();
-
       const company = new CompanyEntity(companyDto);
-      company.userId = id;
+      company.userId = user.id;
 
       if (logo) {
-        const { url, pId } = await this.uploadLogo(id, logo);
+        const { url, pId } = await this.uploadLogo(user.id, logo);
         company.logo = url;
         publicId = pId;
       }
@@ -124,7 +93,7 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
   }
 
   async updateCompany(
-    id: number,
+    company: CompanyEntity,
     user: IUser,
     companyDto: UpdateCompanyDto,
     logo?: Express.Multer.File
@@ -136,12 +105,10 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     await queryRunner.startTransaction();
 
     try {
-      const company = await this.findCompany(id, user, queryRunner);
-
       this.parseData(company, companyDto);
 
       if (logo) {
-        const { url, pId } = await this.uploadLogo(id, logo);
+        const { url, pId } = await this.uploadLogo(company.id, logo);
         company.logo = url;
         publicId = pId;
       }
@@ -173,7 +140,7 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
   }
 
   async addOrChangeCompanyLogo(
-    id: number,
+    company: CompanyEntity,
     user: IUser,
     logo: Express.Multer.File
   ) {
@@ -184,9 +151,7 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     await queryRunner.startTransaction();
 
     try {
-      const company = await this.findCompany(id, user, queryRunner);
-
-      const { url, pId } = await this.uploadLogo(id, logo);
+      const { url, pId } = await this.uploadLogo(company.id, logo);
       publicId = pId;
       company.logo = url;
       company.updatedAt = new Date().toISOString();
@@ -217,13 +182,11 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     }
   }
 
-  async deleteCompanyLogo(id: number, user: IUser) {
+  async deleteCompanyLogo(company: CompanyEntity, user: IUser) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const company = await this.findCompany(id, user, queryRunner);
-
       if (!company.logo) {
         throw new BadRequestException(errorMessages.logo.deleted);
       }
@@ -258,13 +221,12 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     }
   }
 
-  async deleteCompany(id: number, user: IUser) {
+  async deleteCompany(company: CompanyEntity, user: IUser) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const company = await this.findCompany(id, user, queryRunner);
       if (company.logo) {
         await this.cloudinaryService.delete(company.logo);
       }
@@ -291,16 +253,7 @@ export class CompaniesService extends InstanceService<CompanyEntity> {
     }
   }
 
-  async getCompany(id: number, user: IUser) {
-    const company = await this.findOne({
-      where: { id },
-      relations: { user: true },
-    });
-
-    if (!company) throw new NotFoundException();
-    if (user.role === Role.User && company.user.id !== user.id)
-      throw new ForbiddenException();
-
+  getCompany(company: CompanyEntity) {
     return instanceToPlain(company);
   }
 
